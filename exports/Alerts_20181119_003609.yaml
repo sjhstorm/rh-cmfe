@@ -1,0 +1,699 @@
+---
+- MiqAlert:
+    guid: 9bc0d572-40bd-11de-bd12-005056a170fa
+    description: Host Datastore < 5% of Free Space
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Host
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        FIND:
+          search:
+            IS NOT NULL:
+              field: Host.storages-name
+          checkany:
+            ">":
+              field: Host.storages-v_used_space_percent_of_total
+              value: 95
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: fc2ae066-44b8-11de-900a-005056a170fa
+    description: Host  Event Log Error - Failed to validate VM IP address
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Host
+    miq_expression: 
+    responds_to_events: host_scan_complete
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :event_log_message_filter_type: INCLUDES
+        :event_log_message_filter_value: Failed to validate VM IP address
+        :time_threshold: 86400
+        :freq_threshold: '2'
+        :event_log_source: VmMisc
+      :eval_method: hostd_log_threshold
+    severity: 
+- MiqAlert:
+    guid: 8a6d32a8-44b8-11de-900a-005056a170fa
+    description: 'Host Event Log Error - Memory Exceed Soft Limit '
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Host
+    miq_expression: 
+    responds_to_events: host_scan_complete
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :event_log_message_filter_type: INCLUDES
+        :event_log_message_filter_value: exceeds soft limit
+        :time_threshold: 86400
+        :event_log_level: warn
+        :freq_threshold: '2'
+        :event_log_source: Memory checker
+      :eval_method: hostd_log_threshold
+    severity: 
+- MiqAlert:
+    guid: a9532172-44a5-11de-b543-005056a170fa
+    description: VM VMotion > 1 in last 30 min
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: 
+    responds_to_events: '["MigrateVM_Task"]'
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :event_types:
+        - MigrateVM_Task
+        :time_threshold: 1800
+        :freq_threshold: '1'
+      :eval_method: event_threshold
+    severity: 
+- MiqAlert:
+    guid: 1bb81254-44a6-11de-b543-005056a170fa
+    description: VM Guest Windows Event Log Error - NtpClient
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: 
+    responds_to_events: vm_scan_complete
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :event_log_message_filter_type: INCLUDES
+        :event_log_message_filter_value: NtpClient
+        :time_threshold: 86400
+        :event_log_level: error
+        :freq_threshold: '1'
+      :eval_method: event_log_threshold
+    severity: 
+- MiqAlert:
+    guid: ce2f8846-44a5-11de-b543-005056a170fa
+    description: VM CPU count was decreased
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: 
+    responds_to_events: vm_reconfigure
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :operator: Decreased
+        :hdw_attr: :cpu_total_cores
+      :eval_method: reconfigured_hardware_value
+    severity: 
+- MiqAlert:
+    guid: fb73af80-40bd-11de-bd12-005056a170fa
+    description: VM Power On > 2 in last 15 min
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: 
+    responds_to_events: '["PowerOnVM_Task_Complete"]'
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :event_types:
+        - PowerOnVM_Task_Complete
+        :time_threshold: 900
+        :freq_threshold: '2'
+      :eval_method: event_threshold
+    severity: 
+- MiqAlert:
+    guid: e750cdcc-447c-11de-aaba-005056a170fa
+    description: VM Memory was increased
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: 
+    responds_to_events: vm_reconfigure
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :operator: Increased
+        :hdw_attr: memory_mb
+      :eval_method: reconfigured_hardware_value
+    severity: 
+- MiqAlert:
+    guid: d59185a4-40bc-11de-bd12-005056a170fa
+    description: CPU Ready > 4000 ms for more than 10 min
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: 
+    responds_to_events: vm_perf_complete
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :operator: ">"
+        :perf_column: cpu_ready_delta_summation
+        :value_threshold: '4000'
+        :rt_time_threshold: 600
+      :eval_method: realtime_performance
+    severity: 
+- MiqAlert:
+    guid: c2fc477a-44a5-11de-b543-005056a170fa
+    description: VM CPU count was increased
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: 
+    responds_to_events: vm_reconfigure
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :operator: Increased
+        :hdw_attr: :cpu_total_cores
+      :eval_method: reconfigured_hardware_value
+    severity: 
+- MiqAlert:
+    guid: fbe4b5ee-447e-11de-aaba-005056a170fa
+    description: VM Memory was decreased
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: 
+    responds_to_events: vm_reconfigure
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :operator: Decreased
+        :hdw_attr: memory_mb
+      :eval_method: reconfigured_hardware_value
+    severity: 
+- MiqAlert:
+    guid: 913475af-df19-4213-9099-4315dd67c1fd
+    description: ec2-cloudwatch-max-cpu
+    options:
+      :notifications:
+        :delay_next_evaluation: 60
+        :automate:
+          :event_name: ec2-cloudwatch-max-cpu
+    db: Vm
+    miq_expression: 
+    responds_to_events: vm_perf_complete
+    enabled: true
+    read_only: 
+    hash_expression:
+      :eval_method: realtime_performance
+      :mode: internal
+      :options:
+        :perf_column: v_pct_cpu_used_delta_summation
+        :operator: ">"
+        :value_threshold: '1'
+        :trend_direction: none
+        :trend_steepness: 
+        :debug_trace: 'false'
+        :rt_time_threshold: 60
+    severity: 
+- MiqAlert:
+    guid: d27a010e-5de4-41df-9aa6-cc258bbf3ecf
+    description: test
+    options:
+      :notifications:
+        :delay_next_evaluation: 600
+        :automate:
+          :event_name: cpu-exceeds-test
+    db: Vm
+    miq_expression: 
+    responds_to_events: vm_perf_complete
+    enabled: true
+    read_only: 
+    hash_expression:
+      :eval_method: realtime_performance
+      :mode: internal
+      :options:
+        :perf_column: v_pct_cpu_used_delta_summation
+        :operator: ">"
+        :value_threshold: '80'
+        :trend_direction: up
+        :debug_trace: 'false'
+        :rt_time_threshold: 240
+    severity: 
+- MiqAlert:
+    guid: a9e7a571-769a-4b54-9cd7-88d6dc480f4c
+    description: Alert test
+    options:
+      :notifications:
+        :delay_next_evaluation: 600
+        :automate:
+          :event_name: VM Suspend
+    db: Vm
+    miq_expression: 
+    responds_to_events: vm_reset
+    enabled: true
+    read_only: 
+    hash_expression:
+      :eval_method: nothing
+      :mode: internal
+      :options: {}
+    severity: 
+- MiqAlert:
+    guid: 3cfbb5ce-40be-11de-bd12-005056a170fa
+    description: VM Migration > 1 in last 30 min
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: 
+    responds_to_events: '["RelocateVM_Task_Complete"]'
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :event_types:
+        - RelocateVM_Task_Complete
+        :time_threshold: 1800
+        :freq_threshold: '2'
+      :eval_method: event_threshold
+    severity: 
+- MiqAlert:
+    guid: 731da3b2-40bc-11de-bd12-005056a170fa
+    description: 'VM Guest C: Drive < 10% Free'
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        and:
+        - "=":
+            field: Vm-platform
+            value: windows
+        - FIND:
+            search:
+              "=":
+                field: Vm.hardware.volumes-name
+                value: 'C:'
+            checkall:
+              "<":
+                field: Vm.hardware.volumes-free_space_percent
+                value: 10
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: 5cd2b880-be53-11de-8d65-000c290de4f9
+    description: VM Unregistered
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        and:
+        - IS EMPTY:
+            field: Vm.host-name
+            value: ''
+        - IS NOT EMPTY:
+            field: Vm.storage-name
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: 8261bf0a-be54-11de-8d65-000c290de4f9
+    description: VMs on local storage
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Storage
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        "!=":
+          field: Storage-v_total_hosts
+          value: 1
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: fdee2784-bf2c-11de-b3b4-000c290de4f9
+    description: VM Silver and CPU > 1
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        and:
+        - CONTAINS:
+            tag: Vm.managed-service_level
+            value: silver
+        - ">":
+            field: Vm.hardware-cpu_total_cores
+            value: 1
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: 9b61fd9e-bf35-11de-b3b4-000c290de4f9
+    description: VM Silver and RAM > 2 GB
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        and:
+        - CONTAINS:
+            tag: Vm.managed-service_level
+            value: silver
+        - ">":
+            field: Vm.hardware-memory_mb
+            value: 2048
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: 561d023c-bf36-11de-b3b4-000c290de4f9
+    description: Host VMs >10
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Host
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        ">":
+          field: Host-v_total_vms
+          value: 10
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: 82f853b0-bf36-11de-b3b4-000c290de4f9
+    description: Datacenter VMs > 10
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Storage
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        ">":
+          field: Storage-v_total_vms
+          value: 10
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: 58e8a372-bff9-11de-b3b4-000c290de4f9
+    description: VM CD Drive or Floppy Connected
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        or:
+        - FIND:
+            search:
+              INCLUDES:
+                field: Vm.hardware.disks-device_type
+                value: cdrom
+            checkall:
+              STARTS WITH:
+                field: Vm.hardware.disks-start_connected
+                value: 'true'
+        - FIND:
+            search:
+              INCLUDES:
+                field: Vm.hardware.disks-device_type
+                value: floppy
+            checkall:
+              INCLUDES:
+                field: Vm.hardware.disks-start_connected
+                value: 'true'
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: f8b870d0-c23d-11de-a3be-000c290de4f9
+    description: VM Memory Balloon > 250 in last 10 min
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: 
+    responds_to_events: vm_perf_complete
+    enabled: 
+    read_only: true
+    hash_expression:
+      :mode: internal
+      :options:
+        :perf_column: mem_vmmemctl_absolute_average
+        :value_threshold: '250'
+        :rt_time_threshold: 600
+        :operator: ">"
+      :eval_method: realtime_performance
+    severity: 
+- MiqAlert:
+    guid: eb88f942-c23e-11de-a3be-000c290de4f9
+    description: Cluster DRS not enabled
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: EmsCluster
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        "=":
+          field: EmsCluster-drs_enabled
+          value: 'false'
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: 196868de-c23f-11de-a3be-000c290de4f9
+    description: Cluster HA not enabled
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: EmsCluster
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        "=":
+          field: EmsCluster-ha_enabled
+          value: 'false'
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: 4077943a-c240-11de-a3be-000c290de4f9
+    description: VM Environment Tag <> Datastore Environment Tag
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        and:
+        - CONTAINS:
+            tag: Vm.managed-environment
+            value: prod
+        - not:
+            CONTAINS:
+              tag: Vm.storage.managed-environment
+              value: prod
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: 89db0be8-c240-11de-a3be-000c290de4f9
+    description: VM Environment Tag <> Host Environment Tag
+    options:
+      :notifications:
+        :email:
+          :from: ''
+          :to: []
+    db: Vm
+    miq_expression: !ruby/object:MiqExpression
+      exp:
+        and:
+        - CONTAINS:
+            tag: Vm.managed-environment
+            value: prod
+        - not:
+            CONTAINS:
+              tag: Vm.host.managed-environment
+              value: prod
+    responds_to_events: 
+    enabled: 
+    read_only: true
+    hash_expression: 
+    severity: 
+- MiqAlert:
+    guid: ea3acd49-9516-4fde-b828-bf68d254c0cf
+    description: External Prometheus - Providers
+    options:
+      :notifications:
+        :delay_next_evaluation: 0
+        :evm_event: {}
+    db: ExtManagementSystem
+    miq_expression: 
+    responds_to_events: datawarehouse_alert
+    enabled: true
+    read_only: 
+    hash_expression:
+      :eval_method: dwh_generic
+      :mode: internal
+      :options: {}
+    severity: 
+- MiqAlert:
+    guid: efe9d4f0-9c6f-4c67-80b1-05cd83223349
+    description: External Prometheus - Nodes
+    options:
+      :notifications:
+        :delay_next_evaluation: 0
+        :evm_event: {}
+    db: ContainerNode
+    miq_expression: 
+    responds_to_events: datawarehouse_alert
+    enabled: true
+    read_only: 
+    hash_expression:
+      :eval_method: dwh_generic
+      :mode: internal
+      :options: {}
+    severity: 
+- MiqAlert:
+    guid: 060bc6e2-5a9e-48e7-a467-b358444c8465
+    description: High Connection Get Time
+    options:
+      :notifications:
+        :delay_next_evaluation: 600
+        :evm_event: {}
+    db: MiddlewareServer
+    miq_expression: 
+    responds_to_events: hawkular_alert
+    enabled: true
+    read_only: 
+    hash_expression:
+      :eval_method: mw_ds_average_get_time
+      :mode: internal
+      :options:
+        :mw_operator: ">="
+        :value_mw_threshold: '15'
+    severity: error
+- MiqAlert:
+    guid: 5f4f4de8-f557-49bf-a04a-747655741391
+    description: Pool Connections Exhausted
+    options:
+      :notifications:
+        :delay_next_evaluation: 600
+        :evm_event: {}
+    db: MiddlewareServer
+    miq_expression: 
+    responds_to_events: hawkular_alert
+    enabled: true
+    read_only: 
+    hash_expression:
+      :eval_method: mw_ds_available_count
+      :mode: internal
+      :options:
+        :mw_operator: "<"
+        :value_mw_threshold: '2'
+    severity: error

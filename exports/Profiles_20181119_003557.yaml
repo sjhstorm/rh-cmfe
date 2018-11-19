@@ -1,0 +1,1297 @@
+---
+- MiqPolicySet:
+    name: openscap profile
+    description: OpenSCAP profile
+    set_type: MiqPolicySet
+    guid: 0bf2e43a-1211-11e6-aa9c-02424d459b45
+    read_only: true
+    set_data: 
+    mode: control
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: openscap policy
+      description: OpenSCAP
+      expression: 
+      towhat: ContainerImage
+      guid: 14c7b8ee-120f-11e6-aa9c-02424d459b45
+      created_by: admin
+      updated_by: admin
+      notes: 
+      active: true
+      mode: compliance
+      read_only: true
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        MiqEventDefinition:
+          name: containerimage_compliance_check
+          description: Container Image Compliance Check
+          guid: 3b2c0bdf-6d4f-4875-861c-999580324dcd
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: 339f0cc8-317e-11e3-88e1-005056b80000
+          action_type: default
+          options: {}
+      - qualifier: failure
+        failure_sequence: 2
+        MiqEventDefinition:
+          name: containerimage_compliance_check
+          description: Container Image Compliance Check
+          guid: 3b2c0bdf-6d4f-4875-861c-999580324dcd
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: container_image_annotate_scan_results
+          description: Annotate image with scan results and execution prevention status
+          guid: 0dd41aa3-a939-4ecf-b528-c9837c9e6174
+          action_type: default
+          options: {}
+      - qualifier: success
+        success_sequence: 1
+        MiqEventDefinition:
+          name: containerimage_compliance_check
+          description: Container Image Compliance Check
+          guid: 3b2c0bdf-6d4f-4875-861c-999580324dcd
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: container_image_annotate_scan_results
+          description: Annotate image with scan results and execution prevention status
+          guid: 0dd41aa3-a939-4ecf-b528-c9837c9e6174
+          action_type: default
+          options: {}
+      Condition:
+      - name: if container image has high severity openscap rule results
+        description: Has high severity OpenSCAP rule results
+        modifier: deny
+        expression: !ruby/object:MiqExpression
+          exp:
+            FIND:
+              search:
+                "=":
+                  field: ContainerImage.openscap_rule_results-result
+                  value: fail
+              checkany:
+                "=":
+                  field: ContainerImage.openscap_rule_results-severity
+                  value: High
+          context_type: 
+        towhat: ContainerImage
+        file_mtime: 
+        guid: 92b1949a-1210-11e6-aa9c-02424d459b45
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 
+        notes: 
+        read_only: true
+    - name: analyse incoming container images
+      description: Analyse incoming container images
+      expression: 
+      towhat: ContainerImage
+      guid: e7a270bc-109b-11e6-86ba-02424d459b45
+      created_by: admin
+      updated_by: admin
+      notes: 
+      active: true
+      mode: control
+      read_only: true
+      MiqPolicyContent:
+      - qualifier: success
+        success_sequence: 1
+        failure_sequence: 1
+        failure_synchronous: true
+        MiqEventDefinition:
+          name: containerimage_created
+          description: Container Image Discovered
+          guid: 3e79c202-6ae4-4ff1-a347-520690678ff2
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: container_image_analyze
+          description: Initiate SmartState Analysis for Container Image
+          guid: 4b754988-d920-4ff8-8a9a-b4a3215ae6b2
+          action_type: default
+          options: {}
+      Condition:
+      - name: Do not scan image-inspector's image
+        description: Don't scan image-inspector's image
+        modifier: deny
+        expression: !ruby/object:MiqExpression
+          exp:
+            ENDS WITH:
+              field: ContainerImage-name
+              value: "/image-inspector"
+          context_type: 
+        towhat: ContainerImage
+        file_mtime: 
+        guid: e744245a-3d08-11e6-8d39-02422087d789
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 
+        notes: 
+        read_only: true
+    - name: schedule compliance after smart state analysis
+      description: Schedule compliance after smart state analysis
+      expression: 
+      towhat: ContainerImage
+      guid: bae4a2b0-1cfe-11e6-a243-02424d459b45
+      created_by: admin
+      updated_by: admin
+      notes: 
+      active: true
+      mode: control
+      read_only: true
+      MiqPolicyContent:
+      - qualifier: success
+        success_sequence: 1
+        MiqEventDefinition:
+          name: containerimage_scan_complete
+          description: Container Image Analysis Complete
+          guid: 231c597e-633a-4257-9fef-3c0146a81940
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: check_compliance
+          description: Check Host or VM Compliance
+          guid: 53cebd0e-3afb-4a3b-b7b7-31f355d81927
+          action_type: default
+          options: {}
+      Condition: []
+- MiqPolicySet:
+    name: a7fc3c18-306a-11de-971a-005056a12545
+    description: 'Compliance: DISA STIG'
+    set_type: MiqPolicySet
+    guid: a7fc3c18-306a-11de-971a-005056a12545
+    read_only: 
+    set_data:
+      :notes: DISA STIG ESX SERVER V1R1 - Based on Security Technical Implementation
+        Guide for ESX Server Version 1, Release 1 28 April 2008
+    mode: control
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: 56c4d50e-3069-11de-971a-005056a12545
+      description: DISA ESX Server STIG - ESX1170 requires IAO/SA to remove or disable
+        all unused hardware on VM
+      expression: 
+      towhat: Vm
+      guid: 56c4d50e-3069-11de-971a-005056a12545
+      created_by: 
+      updated_by: 
+      notes: 
+      active: true
+      mode: control
+      read_only: 
+      MiqPolicyContent: []
+      Condition:
+      - name: 627379ac-3067-11de-971a-005056a12545
+        description: 'ESX1170: CAT II - Guest OS remove all unused hardware'
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            and:
+            - FIND:
+                checkcount:
+                  "=":
+                    value: 0
+                    field: "<count>"
+                search:
+                  INCLUDES:
+                    value: floppy
+                    field: Vm.hardware.disks-device_type
+            - FIND:
+                checkcount:
+                  "=":
+                    value: 0
+                    field: "<count>"
+                search:
+                  INCLUDES:
+                    value: cdrom
+                    field: Vm.hardware.disks-device_type
+        towhat: Vm
+        file_mtime: 
+        guid: 627379ac-3067-11de-971a-005056a12545
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 10000000000010
+        notes: 
+        read_only: 
+    - name: 69b1559e-3068-11de-971a-005056a12545
+      description: DISA ESX Server STIG requires that the Virtual Machine Administrator
+        be responsible for the following
+      expression: 
+      towhat: Vm
+      guid: 69b1559e-3068-11de-971a-005056a12545
+      created_by: 
+      updated_by: 
+      notes: 
+      active: true
+      mode: control
+      read_only: 
+      MiqPolicyContent: []
+      Condition:
+      - name: ed826874-3066-11de-971a-005056a12545
+        description: 'ESX1030: CAT II - Test and Development VMs must be seperated
+          from Production VMs'
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            and:
+            - FIND:
+                checkcount:
+                  ">=":
+                    value: 1
+                    field: "<count>"
+                search:
+                  STARTS WITH:
+                    value: '192.168'
+                    field: Vm.hardware.networks-ipaddress
+            - CONTAINS:
+                tag: Vm.managed-environment
+                value: prod
+        towhat: Vm
+        file_mtime: 
+        guid: ed826874-3066-11de-971a-005056a12545
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 10000000000011
+        notes: 
+        read_only: 
+      - name: 28e35e32-3067-11de-971a-005056a12545
+        description: 'ESX0940: CAT II - prevent use of nonpersistent disk mode'
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            FIND:
+              checkcount:
+                "=":
+                  value: 0
+                  field: "<count>"
+              search:
+                INCLUDES:
+                  value: nonpersistent
+                  field: Vm.hardware.disks-mode
+        towhat: Vm
+        file_mtime: 
+        guid: 28e35e32-3067-11de-971a-005056a12545
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 10000000000011
+        notes: 
+        read_only: 
+    - name: de9aa7ec-3069-11de-971a-005056a12545
+      description: DISA Information Assurance Vulnerability Alert - MS08-67
+      expression: 
+      towhat: Vm
+      guid: de9aa7ec-3069-11de-971a-005056a12545
+      created_by: 
+      updated_by: 
+      notes: 
+      active: true
+      mode: control
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        MiqEventDefinition:
+          name: vm_start
+          description: VM Power On
+          guid: 404b4630-21a8-11e2-b47a-0050568b19a3
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: vm_stop
+          description: Stop Virtual Machine
+          guid: 37f2da3e-21a8-11e2-b47a-0050568b19a3
+          action_type: default
+          options: {}
+      Condition:
+      - name: 8b0d83d0-3067-11de-971a-005056a12545
+        description: IAVA - MS08-067 for Windows Server 2003 Service Pack 1 & 2
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            or:
+            - and:
+              - "=":
+                  value: Service Pack 1
+                  field: Vm.operating_system-service_pack
+              - FIND:
+                  checkall:
+                    STARTS WITH:
+                      value: 5.2.3790.3229
+                      field: Vm.filesystems-file_version
+                  search:
+                    "=":
+                      value: c:/windows/system32/netapi32.dll
+                      field: Vm.filesystems-name
+            - and:
+              - "=":
+                  value: Service Pack 2
+                  field: Vm.operating_system-service_pack
+              - FIND:
+                  checkall:
+                    STARTS WITH:
+                      value: 5.2.3790.4392
+                      field: Vm.filesystems-file_version
+                  search:
+                    "=":
+                      value: c:/windows/system32/netapi32.dll
+                      field: Vm.filesystems-name
+        towhat: Vm
+        file_mtime: 
+        guid: 8b0d83d0-3067-11de-971a-005056a12545
+        filename: 
+        applies_to_exp: !ruby/object:MiqExpression
+          exp:
+            and:
+            - STARTS WITH:
+                value: Microsoft Windows Server 2003
+                field: Vm.operating_system-product_name
+            - or:
+              - "=":
+                  value: Service Pack 1
+                  field: Vm.operating_system-service_pack
+              - "=":
+                  value: Service Pack 2
+                  field: Vm.operating_system-service_pack
+        miq_policy_id: 10000000000012
+        notes: 
+        read_only: 
+      - name: 9482beb2-3067-11de-971a-005056a12545
+        description: IAVA - MS08-067 for Windows XP Service Pack 2 & 3
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            and:
+            - FIND:
+                checkall:
+                  STARTS WITH:
+                    value: 5.1.2600.3462
+                    field: Vm.filesystems-file_version
+                search:
+                  "=":
+                    value: c:/windows/system32/netapi32.dll
+                    field: Vm.filesystems-name
+            - KEY EXISTS:
+                regkey: HKLM\SOFTWARE\Microsoft\Updates\Windows XP\SP4\KB958644\Filelist
+        towhat: Vm
+        file_mtime: 
+        guid: 9482beb2-3067-11de-971a-005056a12545
+        filename: 
+        applies_to_exp: !ruby/object:MiqExpression
+          exp:
+            and:
+            - STARTS WITH:
+                value: Microsoft Windows XP
+                field: Vm.operating_system-product_name
+            - or:
+              - "=":
+                  value: Service Pack 2
+                  field: Vm.operating_system-service_pack
+              - "=":
+                  value: Service Pack 3
+                  field: Vm.operating_system-service_pack
+        miq_policy_id: 10000000000012
+        notes: 
+        read_only: 
+      - name: 7e492e4c-3067-11de-971a-005056a12545
+        description: IAVA - MS08-067 for Windows 2000 Service Pack 4
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            and:
+            - FIND:
+                checkall:
+                  STARTS WITH:
+                    value: 5.00.2195.7203
+                    field: Vm.filesystems-file_version
+                search:
+                  "=":
+                    value: c:/winnt/system32/netapi32.dll
+                    field: Vm.filesystems-name
+            - KEY EXISTS:
+                regkey: HKLM\SOFTWARE\Microsoft\Updates\Windows 2000\SP5\KB958644\Filelist
+        towhat: Vm
+        file_mtime: 
+        guid: 7e492e4c-3067-11de-971a-005056a12545
+        filename: 
+        applies_to_exp: !ruby/object:MiqExpression
+          exp:
+            and:
+            - STARTS WITH:
+                value: Microsoft Windows 2000
+                field: Vm.operating_system-product_name
+            - "=":
+                value: Service Pack 4
+                field: Vm.operating_system-service_pack
+        miq_policy_id: 10000000000012
+        notes: 
+        read_only: 
+- MiqPolicySet:
+    name: dd1698b0-e59d-11e3-96d8-001a4ab4f909
+    description: 'Compliance: OpenSSL Security'
+    set_type: MiqPolicySet
+    guid: dd1698b0-e59d-11e3-96d8-001a4ab4f909
+    read_only: 
+    set_data: 
+    mode: control
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: b03a4e74-473e-11e4-b745-005056b3585a
+      description: Shell-Shock Vulnerability
+      expression: !ruby/object:MiqExpression
+        exp:
+          INCLUDES:
+            field: Vm-os_image_name
+            value: linux
+        context_type: 
+      towhat: Vm
+      guid: b03a4e74-473e-11e4-b745-005056b3585a
+      created_by: admin
+      updated_by: admin
+      notes: |-
+        This policy is based on https://access.redhat.com/articles/1200223.
+        Red Hat Enterprise Linux 6
+        bash-4.1.2-15.el6_5.2
+        bash-4.1.2-15.el6_5.1.sjis.2
+        bash-4.1.2-9.el6_2.2
+        bash-4.1.2-15.el6_4.2
+      active: true
+      mode: compliance
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        MiqEventDefinition:
+          name: vm_compliance_check
+          description: VM Compliance Check
+          guid: 42b1bd96-317e-11e3-88e1-005056b80000
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: d4ea28d8-f051-11e2-97c5-000c297e26aa
+          description: Send Email to Security Team
+          guid: d4ea28d8-f051-11e2-97c5-000c297e26aa
+          action_type: email
+          options:
+            :from: cloudforms_noreply@redhat.com
+            :to: jmarc@redhat.com
+      - qualifier: failure
+        failure_sequence: 2
+        MiqEventDefinition:
+          name: vm_compliance_check
+          description: VM Compliance Check
+          guid: 42b1bd96-317e-11e3-88e1-005056b80000
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: 339f0cc8-317e-11e3-88e1-005056b80000
+          action_type: default
+          options: {}
+      - qualifier: failure
+        failure_sequence: 3
+        MiqEventDefinition:
+          name: vm_compliance_check
+          description: VM Compliance Check
+          guid: 42b1bd96-317e-11e3-88e1-005056b80000
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: log
+          description: Generate log message
+          guid: e800c9aa-d60f-11e3-85b2-001a4ab4f909
+          action_type: default
+          options: {}
+      Condition:
+      - name: 20a8dc70-e245-11e3-9d65-005056b80000
+        description: Vulnerable bash Package (ShellShock)
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            and:
+            - CONTAINS:
+                field: Vm.guest_applications-name
+                value: bash
+            - FIND:
+                search:
+                  "=":
+                    field: Vm.guest_applications-version
+                    value: 4.1.2
+                checkall:
+                  REGULAR EXPRESSION MATCHES:
+                    field: Vm.guest_applications-release
+                    value: 1[5]\.(el6_5.2\b|el6_5.1.sjis.2(?!\.)|el6_4.2)
+          context_type: 
+        towhat: Vm
+        file_mtime: 
+        guid: 20a8dc70-e245-11e3-9d65-005056b80000
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 
+        notes: 
+        read_only: 
+    - name: e629c444-df2a-11e5-ac99-001a4aa80101
+      description: DROWN OpenSSL Vulnerability
+      expression: !ruby/object:MiqExpression
+        exp:
+          INCLUDES:
+            field: Vm-os_image_name
+            value: linux
+        context_type: 
+      towhat: Vm
+      guid: e629c444-df2a-11e5-ac99-001a4aa80101
+      created_by: admin
+      updated_by: admin
+      notes: 'This policy validates VM compliance against openssl package versions
+        affected by DROWN cross-protocol attack (CVE-2016-0800)
+
+'
+      active: true
+      mode: compliance
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: success
+        success_sequence: 1
+        MiqEventDefinition:
+          name: vm_compliance_check
+          description: VM Compliance Check
+          guid: 42b1bd96-317e-11e3-88e1-005056b80000
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: log
+          description: Generate log message
+          guid: e800c9aa-d60f-11e3-85b2-001a4ab4f909
+          action_type: default
+          options: {}
+      - qualifier: success
+        success_sequence: 2
+        MiqEventDefinition:
+          name: vm_compliance_check
+          description: VM Compliance Check
+          guid: 42b1bd96-317e-11e3-88e1-005056b80000
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: 339f0cc8-317e-11e3-88e1-005056b80000
+          action_type: default
+          options: {}
+      Condition:
+      - name: 0d6beea8-df56-11e5-ac99-001a4aa80101
+        description: Vulnerable DROWN openssl packages (RHEL5/6/7)
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            or:
+            - and:
+              - CONTAINS:
+                  field: Vm.guest_applications-name
+                  value: openssl
+              - FIND:
+                  search:
+                    "=":
+                      field: Vm.guest_applications-version
+                      value: 0.9.8b
+                  checkall:
+                    REGULAR EXPRESSION MATCHES:
+                      field: Vm.guest_applications-release
+                      value: 8b-8\.3\.el5|8\.3\.el5_0\.2|10\.el5\b|10\.el5_2\.1
+            - and:
+              - CONTAINS:
+                  field: Vm.guest_applications-name
+                  value: openssl
+              - FIND:
+                  search:
+                    "=":
+                      field: Vm.guest_applications-version
+                      value: 0.9.8e
+                  checkall:
+                    REGULAR EXPRESSION MATCHES:
+                      field: Vm.guest_applications-release
+                      value: 7\.el5\b|7\.el5_3\.2|12\.el5\b|12\.el5_4\.1|12\.el5_4\.6|12\.el5_5\.7|12\.el5_6\.9|12\.el5_6\.10|12\.el5_6\.12|20\.el5\b|20\.el5_7\.1|22\.el5\b|22\.el5_8\.1|22\.el5_8\.3|22\.el5_8\.4|26\.el5_9\.1|26\.el5_9\.2|26\.el5_9\.4|27\.el5_10\.1|27\.el5_10\.3|27\.el5_10\.4|31\.el5_11|32\.el5_11
+            - and:
+              - CONTAINS:
+                  field: Vm.guest_applications-name
+                  value: openssl
+              - FIND:
+                  search:
+                    "=":
+                      field: Vm.guest_applications-version
+                      value: 1.0.0
+                  checkall:
+                    REGULAR EXPRESSION MATCHES:
+                      field: Vm.guest_applications-release
+                      value: 4\.el6\b|4\.el6_0\.1|4\.el6_0\.2|4\.el6_0\.3|10.el6\b|10\.el6_1\.4|10\.el6_1\.5|10\.el6_1\.6|20\.el6\b|20\.el6_2\.1|20\.el6_2\.2|20\.el6_2\.3|20\.el6_2\.4|20\.el6_2\.5|20\.el6_2\.7|25\.el6_3\.1|25\.el6_3\.3|27.el6\b|27\.el6_4\.2|27\.el6_4\.4
+            - and:
+              - CONTAINS:
+                  field: Vm.guest_applications-name
+                  value: openssl
+              - FIND:
+                  search:
+                    "=":
+                      field: Vm.guest_applications-version
+                      value: 1.0.1e
+                  checkall:
+                    REGULAR EXPRESSION MATCHES:
+                      field: Vm.guest_applications-release
+                      value: 15\.el6\b|16\.el6_5\.1\b|16\.el6_5\.4|16\.el6_5\.7|16\.el6_5\.14|16\.el6_5\.15|30\.el6\b|30\.el6_6\.2|30\.el6_6\.4|30\.el6_6\.5|16\.el6_5\b|30\.el6_6\.7|30\.el6_6\.8|30\.el6_6\.9|30\.el6_6\.11|42\.el6\b|42\.el6_7\.1|42\.el6_7\.2|34\.el7\b|34\.el7_0\.3|34\.el7_0\.4|34\.el7_0\.6|34\.el7_0\.7|42.el7\b|42\.el7_1\.4|42\.el7_1\.5|42\.el7_1\.6|42\.el7_1\.8|42\.el7_1\.9|51\.el7_2\.1|51\.el7_2\.2
+          context_type: 
+        towhat: Vm
+        file_mtime: 
+        guid: 0d6beea8-df56-11e5-ac99-001a4aa80101
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 
+        notes: 
+        read_only: 
+- MiqPolicySet:
+    name: a91b89be-4d17-11e7-88dd-2cc2600060fb
+    description: Security Enforcement
+    set_type: MiqPolicySet
+    guid: a91b89be-4d17-11e7-88dd-2cc2600060fb
+    read_only: 
+    set_data: 
+    mode: control
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: f96814fa-4d17-11e7-88dd-2cc2600060fb
+      description: SELinux Enforcement
+      expression: 
+      towhat: Vm
+      guid: f96814fa-4d17-11e7-88dd-2cc2600060fb
+      created_by: admin
+      updated_by: admin
+      notes: 
+      active: true
+      mode: compliance
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        failure_synchronous: true
+        MiqEventDefinition:
+          name: vm_compliance_check
+          description: VM Compliance Check
+          guid: 42b1bd96-317e-11e3-88e1-005056b80000
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: 339f0cc8-317e-11e3-88e1-005056b80000
+          action_type: default
+          options: {}
+      - qualifier: failure
+        failure_sequence: 2
+        failure_synchronous: true
+        MiqEventDefinition:
+          name: vm_compliance_check
+          description: VM Compliance Check
+          guid: 42b1bd96-317e-11e3-88e1-005056b80000
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: d4ea28d8-f051-11e2-97c5-000c297e26aa
+          description: Send Email to Security Team
+          guid: d4ea28d8-f051-11e2-97c5-000c297e26aa
+          action_type: email
+          options:
+            :from: cloudforms_noreply@redhat.com
+            :to: jmarc@redhat.com
+      Condition:
+      - name: 7d7cee48-4d16-11e7-88dd-2cc2600060fb
+        description: SELinux is enforced
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            FIND:
+              search:
+                INCLUDES:
+                  field: Vm.filesystems-name
+                  value: selinux
+              checkall:
+                INCLUDES:
+                  field: Vm.filesystems-contents
+                  value: SELINUX=enforcing
+          context_type: 
+        towhat: Vm
+        file_mtime: 
+        guid: 7d7cee48-4d16-11e7-88dd-2cc2600060fb
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 
+        notes: 
+        read_only: 
+- MiqPolicySet:
+    name: 42476b93-836b-43ad-86fa-2c0e046967e7
+    description: OPTag
+    set_type: MiqPolicySet
+    guid: 42476b93-836b-43ad-86fa-2c0e046967e7
+    read_only: 
+    set_data: 
+    mode: control
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: 26acdab4-df87-4dcf-a295-5426e25022c9
+      description: tag
+      expression: 
+      towhat: Vm
+      guid: 26acdab4-df87-4dcf-a295-5426e25022c9
+      created_by: admin
+      updated_by: admin
+      notes: 
+      active: true
+      mode: control
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: success
+        success_sequence: 1
+        success_synchronous: true
+        MiqEventDefinition:
+          name: assigned_company_tag
+          description: Tag Complete
+          guid: 88391de9-ca58-46ad-8a09-c678fcbb7000
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: ac4958c7-d386-4e71-a23e-68da7cf026c6
+          description: op
+          guid: ac4958c7-d386-4e71-a23e-68da7cf026c6
+          action_type: email
+          options:
+            :use_event_target: false
+            :use_localhost: true
+            :from: cfadmin@redhat.com
+            :to: opower@redhat.com
+      Condition: []
+- MiqPolicySet:
+    name: 84e65454-b52a-41b9-9500-86a9446ca259
+    description: Notify Admin on Database Shutdown
+    set_type: MiqPolicySet
+    guid: 84e65454-b52a-41b9-9500-86a9446ca259
+    read_only: 
+    set_data: 
+    mode: control
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: 81865b2f-f391-4e9d-970e-077a40e73b8a
+      description: Database Shutdown
+      expression: 
+      towhat: Vm
+      guid: 81865b2f-f391-4e9d-970e-077a40e73b8a
+      created_by: admin
+      updated_by: admin
+      notes: 
+      active: true
+      mode: control
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: success
+        success_sequence: 1
+        success_synchronous: true
+        MiqEventDefinition:
+          name: vm_shutdown_guest
+          description: VM Guest Shutdown
+          guid: af43b525-695f-4c1b-91ab-910c2c38f38d
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: d4ea28d8-f051-11e2-97c5-000c297e26aa
+          description: Send Email to Security Team
+          guid: d4ea28d8-f051-11e2-97c5-000c297e26aa
+          action_type: email
+          options:
+            :from: cloudforms_noreply@redhat.com
+            :to: jmarc@redhat.com
+      Condition:
+      - name: 4dd3d46b-05fb-41bf-a38b-19d0fa77eb82
+        description: VM Tagged with Database
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            CONTAINS:
+              tag: Vm.container_build.managed-function
+              value: database
+          context_type: 
+        towhat: Vm
+        file_mtime: 
+        guid: 4dd3d46b-05fb-41bf-a38b-19d0fa77eb82
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 
+        notes: 
+        read_only: 
+- MiqPolicySet:
+    name: 97fe0866-b8e5-11e2-87c6-001a4a034c7a
+    description: 'Compliance: RHEL Host (KVM)'
+    set_type: MiqPolicySet
+    guid: 97fe0866-b8e5-11e2-87c6-001a4a034c7a
+    read_only: 
+    set_data: 
+    mode: control
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: 4ed279b2-fa55-11de-83ca-005056ba0614
+      description: Timekeeping - NTP Service Running
+      expression: 
+      towhat: Host
+      guid: 4ed279b2-fa55-11de-83ca-005056ba0614
+      created_by: admin
+      updated_by: admin
+      notes: This policy verifies that the NTP servers is configured to automatically
+        start.
+      active: true
+      mode: compliance
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        MiqEventDefinition:
+          name: host_compliance_check
+          description: Host Compliance Check
+          guid: b9abe0a8-f586-11de-8ebc-0050568a07c7
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: 339f0cc8-317e-11e3-88e1-005056b80000
+          action_type: default
+          options: {}
+      Condition:
+      - name: 9a08d21e-fa55-11de-83ca-005056ba0614
+        description: Verify NTP is Running
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            FIND:
+              checkany:
+                INCLUDES:
+                  value: '3'
+                  field: Host.host_services-enable_run_levels
+              search:
+                "=":
+                  value: ntpd
+                  field: Host.host_services-name
+        towhat: Host
+        file_mtime: 
+        guid: 9a08d21e-fa55-11de-83ca-005056ba0614
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 10000000000031
+        notes: This condition verifies that the run level of the service ntpd is set
+          to three.
+        read_only: 
+    - name: 8cecc84c-fa46-11de-83ca-005056ba0614
+      description: Limit su Access to root Account
+      expression: 
+      towhat: Host
+      guid: 8cecc84c-fa46-11de-83ca-005056ba0614
+      created_by: admin
+      updated_by: admin
+      notes: This policy validates that only members of the group wheel can access
+        the su command.
+      active: true
+      mode: compliance
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        MiqEventDefinition:
+          name: host_compliance_check
+          description: Host Compliance Check
+          guid: b9abe0a8-f586-11de-8ebc-0050568a07c7
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: 339f0cc8-317e-11e3-88e1-005056b80000
+          action_type: default
+          options: {}
+      Condition:
+      - name: 63b243fc-fa47-11de-83ca-005056ba0614
+        description: Only members of wheel group can execute su command
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            FIND:
+              checkany:
+                REGULAR EXPRESSION MATCHES:
+                  value: "^\\s*auth\\s+required\\s+.*pam_wheel\\.so\\s+use_uid"
+                  field: Host.filesystems-contents
+              search:
+                "=":
+                  value: "/etc/pam.d/su"
+                  field: Host.filesystems-name
+        towhat: Host
+        file_mtime: 
+        guid: 63b243fc-fa47-11de-83ca-005056ba0614
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 10000000000050
+        notes: This condition validates that the file /etc/pam.d/su contains a variation
+          of the string "auth required pam_wheel.so use_uid".
+        read_only: 
+    - name: 04db603c-fa3a-11de-83ca-005056ba0614
+      description: Firewall - Outgoing Security Level
+      expression: 
+      towhat: Host
+      guid: 04db603c-fa3a-11de-83ca-005056ba0614
+      created_by: admin
+      updated_by: admin
+      notes: This policy verifies that only a defined set of outgoing TCP and UDP
+        Ports are open.
+      active: true
+      mode: compliance
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        MiqEventDefinition:
+          name: host_compliance_check
+          description: Host Compliance Check
+          guid: b9abe0a8-f586-11de-8ebc-0050568a07c7
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: 339f0cc8-317e-11e3-88e1-005056b80000
+          action_type: default
+          options: {}
+      Condition:
+      - name: f0afd7d6-fa3a-11de-83ca-005056ba0614
+        description: Valid Outgoing TCP Ports
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            LIMITED TO:
+              value: '902,427,443,27000,27010'
+              field: Host-enabled_tcp_outbound_ports
+        towhat: Host
+        file_mtime: 
+        guid: f0afd7d6-fa3a-11de-83ca-005056ba0614
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 10000000000020
+        notes: This condition verifies that the only open outgoing TCP ports are 427,443,902,27000,
+          and 27010.
+        read_only: 
+      - name: 1778fb28-fa44-11de-83ca-005056ba0614
+        description: Valid Outgoing UDP Ports
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            LIMITED TO:
+              value: '427,123,902'
+              field: Host-enabled_udp_outbound_ports
+        towhat: Host
+        file_mtime: 
+        guid: 1778fb28-fa44-11de-83ca-005056ba0614
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 10000000000020
+        notes: This condition verifies that the only open outgoing UDP ports are 123,427,
+          and 902.
+        read_only: 
+    - name: af2d74ea-fa39-11de-83ca-005056ba0614
+      description: Firewall - Incoming Security Level
+      expression: 
+      towhat: Host
+      guid: af2d74ea-fa39-11de-83ca-005056ba0614
+      created_by: admin
+      updated_by: admin
+      notes: This policy verifies that only a defined set of incoming TCP and UDP
+        Ports are open.
+      active: true
+      mode: compliance
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        MiqEventDefinition:
+          name: host_compliance_check
+          description: Host Compliance Check
+          guid: b9abe0a8-f586-11de-8ebc-0050568a07c7
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: 339f0cc8-317e-11e3-88e1-005056b80000
+          action_type: default
+          options: {}
+      Condition:
+      - name: b4a0843a-fa43-11de-83ca-005056ba0614
+        description: Valid Incoming UDP Ports
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            LIMITED TO:
+              value: '427'
+              field: Host-enabled_udp_inbound_ports
+        towhat: Host
+        file_mtime: 
+        guid: b4a0843a-fa43-11de-83ca-005056ba0614
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 10000000000021
+        notes: This condition verifies that the only open incoming UDP port is 427.
+        read_only: 
+      - name: '03529e9e-f961-11de-9e9d-0050568a07c7'
+        description: Valid Incoming TCP Ports
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            LIMITED TO:
+              value: '902,80,443,427,5989,22,5988'
+              field: Host-enabled_tcp_inbound_ports
+        towhat: Host
+        file_mtime: 
+        guid: '03529e9e-f961-11de-9e9d-0050568a07c7'
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 10000000000021
+        notes: This condition verifies that the only open incoming TCP ports are 22,80,427,443,902,5988,and
+          5989.
+        read_only: 
+    - name: c63b0560-fa45-11de-83ca-005056ba0614
+      description: Root Login via SSH should be Disabled
+      expression: 
+      towhat: Host
+      guid: c63b0560-fa45-11de-83ca-005056ba0614
+      created_by: admin
+      updated_by: admin
+      notes: This policy verifies that the root account cannot login to the host via
+        SSH.
+      active: true
+      mode: compliance
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        MiqEventDefinition:
+          name: host_compliance_check
+          description: Host Compliance Check
+          guid: b9abe0a8-f586-11de-8ebc-0050568a07c7
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: 339f0cc8-317e-11e3-88e1-005056b80000
+          action_type: default
+          options: {}
+      Condition:
+      - name: 4435b6d6-fa46-11de-83ca-005056ba0614
+        description: PermitRootLogin = no in sshd_config file
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            FIND:
+              checkany:
+                REGULAR EXPRESSION MATCHES:
+                  value: "^\\s*PermitRootLogin\\s+no"
+                  field: Host.filesystems-contents
+              search:
+                "=":
+                  value: "/etc/ssh/sshd_config"
+                  field: Host.filesystems-name
+        towhat: Host
+        file_mtime: 
+        guid: 4435b6d6-fa46-11de-83ca-005056ba0614
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 10000000000042
+        notes: This condition checks the file /etc/ssh/sshd_config and verifies that
+          the PermitRootLogin parameter's value is set to no.
+        read_only: 
+- MiqPolicySet:
+    name: 8840b6d8-ce8e-46dd-8a04-dad77fbe062d
+    description: Application SLA
+    set_type: MiqPolicySet
+    guid: 8840b6d8-ce8e-46dd-8a04-dad77fbe062d
+    read_only: 
+    set_data: 
+    mode: control
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: c94abc55-2821-4c9b-98e5-4b493a490dcb
+      description: OpenStack Application Instance SLA
+      expression: !ruby/object:MiqExpression
+        exp:
+          and:
+          - "=":
+              field: Vm.ext_management_system-name
+              value: OpenStack
+          - STARTS WITH:
+              field: Vm-name
+              value: cfme-w
+        context_type: 
+      towhat: Vm
+      guid: c94abc55-2821-4c9b-98e5-4b493a490dcb
+      created_by: admin
+      updated_by: admin
+      notes: Application Instance SLA applies only to OpenStack instances whose name
+        starts with cfme-w. Basically, we are going to look for a minimum number of
+        CF workers to always exist.
+      active: true
+      mode: control
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: success
+        success_sequence: 1
+        success_synchronous: true
+        MiqEventDefinition:
+          name: vm_poweroff
+          description: VM Power Off
+          guid: f08869c6-9496-4fb8-b7a6-a477cd9e3be2
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: f689713b-94b8-4197-85a1-6667455c088b
+          description: Maintain Application SLA
+          guid: f689713b-94b8-4197-85a1-6667455c088b
+          action_type: run_ansible_playbook
+          options:
+            :use_event_target: false
+            :use_localhost: true
+            :service_template_id: 32
+      Condition: []
+- MiqPolicySet:
+    name: 17e82fae-7fe5-4c97-90f1-d9c3c844e674
+    description: Loic
+    set_type: MiqPolicySet
+    guid: 17e82fae-7fe5-4c97-90f1-d9c3c844e674
+    read_only: 
+    set_data: 
+    mode: control
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: b40b5927-f65d-432e-b1f9-a8bfaeeb21c2
+      description: My scan
+      expression: 
+      towhat: ContainerImage
+      guid: b40b5927-f65d-432e-b1f9-a8bfaeeb21c2
+      created_by: admin
+      updated_by: admin
+      notes: 
+      active: true
+      mode: control
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: success
+        success_sequence: 1
+        success_synchronous: true
+        MiqEventDefinition:
+          name: containerimage_created
+          description: Container Image Discovered
+          guid: 3e79c202-6ae4-4ff1-a347-520690678ff2
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: f689713b-94b8-4197-85a1-6667455c088b
+          description: Maintain Application SLA
+          guid: f689713b-94b8-4197-85a1-6667455c088b
+          action_type: run_ansible_playbook
+          options:
+            :use_event_target: false
+            :use_localhost: true
+            :service_template_id: 32
+      Condition:
+      - name: 3d3fd37d-826f-46d8-ba54-87e1469ef14c
+        description: Loic Condition
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            "=":
+              field: ContainerImage-author
+              value: loic
+          context_type: 
+        towhat: ContainerImage
+        file_mtime: 
+        guid: 3d3fd37d-826f-46d8-ba54-87e1469ef14c
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 
+        notes: 
+        read_only: 
