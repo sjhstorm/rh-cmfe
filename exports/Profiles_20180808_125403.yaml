@@ -1,0 +1,67 @@
+---
+- MiqPolicySet:
+    name: 9a22909b-2841-4697-9674-d7499e8d1191
+    description: Security Baseline
+    set_type: MiqPolicySet
+    guid: 9a22909b-2841-4697-9674-d7499e8d1191
+    read_only: 
+    set_data: 
+    mode: 
+    owner_type: 
+    owner_id: 
+    userid: 
+    group_id: 
+    MiqPolicy:
+    - name: aa08d2c9-836e-48d2-90d9-2643f2eedb58
+      description: Do not allow root login via SSH
+      expression: 
+      towhat: Vm
+      guid: aa08d2c9-836e-48d2-90d9-2643f2eedb58
+      created_by: admin
+      updated_by: admin
+      notes: 
+      active: true
+      mode: compliance
+      read_only: 
+      MiqPolicyContent:
+      - qualifier: failure
+        failure_sequence: 1
+        failure_synchronous: true
+        MiqEventDefinition:
+          name: vm_compliance_check
+          description: VM Compliance Check
+          guid: b0841a88-70da-473c-b2d9-2e33bbf9c83d
+          event_type: Default
+          definition: 
+          default: 
+          enabled: 
+        MiqAction:
+          name: compliance_failed
+          description: Mark as Non-Compliant
+          guid: a6c17a61-ad94-484c-99cc-3b34fb8509c5
+          action_type: default
+          options: {}
+      Condition:
+      - name: e00c4e9d-285e-4e2d-a90c-57cceb40a939
+        description: Root login via SSH not allowed
+        modifier: allow
+        expression: !ruby/object:MiqExpression
+          exp:
+            FIND:
+              search:
+                "=":
+                  field: Vm.filesystems-name
+                  value: "/etc/ssh/sshd_config"
+              checkany:
+                REGULAR EXPRESSION MATCHES:
+                  field: Vm.filesystems-contents
+                  value: "^\\s*PermitRootLogin\\s+no"
+          context_type: 
+        towhat: Vm
+        file_mtime: 
+        guid: e00c4e9d-285e-4e2d-a90c-57cceb40a939
+        filename: 
+        applies_to_exp: 
+        miq_policy_id: 
+        notes: 
+        read_only: 

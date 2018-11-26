@@ -1,0 +1,195 @@
+---
+- MiqReport:
+    title: VM Compliance Report - Failed
+    rpt_group: Custom
+    rpt_type: Custom
+    priority: 
+    db: ManageIQ::Providers::InfraManager::Vm
+    cols:
+    - name
+    include:
+      last_compliance:
+        columns:
+        - compliant
+        - timestamp
+        - updated_on
+    col_order:
+    - name
+    - last_compliance.compliant
+    - last_compliance.timestamp
+    - last_compliance.updated_on
+    headers:
+    - Name
+    - Last Compliance History Compliant
+    - Last Compliance History Activity Sample - Timestamp (Day/Time)
+    - Last Compliance History Date Updated
+    conditions: !ruby/object:MiqExpression
+      exp:
+        "=":
+          field: ManageIQ::Providers::InfraManager::Vm-last_compliance_status
+          value: 'false'
+      context_type: 
+    order: Ascending
+    sortby: 
+    group: 
+    graph: 
+    dims: 
+    filename: 
+    file_mtime: 
+    categories: []
+    timeline:
+      :field: ManageIQ::Providers::InfraManager::Vm.last_compliance-timestamp
+      :position: Last
+    template_type: report
+    where_clause: 
+    db_options: {}
+    generate_cols: 
+    generate_rows: 
+    col_formats:
+    - 
+    - 
+    - 
+    - 
+    tz: 
+    time_profile_id: 
+    display_filter: 
+    col_options: {}
+    rpt_options:
+      :pdf:
+        :page_size: US-Letter
+      :queue_timeout: 
+    miq_group_id: 10000000000002
+    user_id: 10000000000001
+    menu_name: VM Compliance Report - Failed
+- MiqReport:
+    title: Systems allowing root to login via SSH
+    rpt_group: Custom
+    rpt_type: Custom
+    priority: 
+    db: Vm
+    cols:
+    - name
+    include:
+      filesystems:
+        columns:
+        - name
+        - updated_on
+    col_order:
+    - name
+    - filesystems.name
+    - filesystems.updated_on
+    headers:
+    - Name
+    - File Name
+    - File Date Updated
+    conditions: !ruby/object:MiqExpression
+      exp:
+        FIND:
+          search:
+            "=":
+              field: Vm.filesystems-name
+              value: "/etc/ssh/sshd_config"
+          checkany:
+            REGULAR EXPRESSION DOES NOT MATCH:
+              field: Vm.filesystems-contents
+              value: '"^\s*PermitRootLogin\s+no"'
+      context_type: 
+    order: Ascending
+    sortby: 
+    group: 
+    graph: 
+    dims: 
+    filename: 
+    file_mtime: 
+    categories: []
+    timeline: 
+    template_type: report
+    where_clause: 
+    db_options: {}
+    generate_cols: 
+    generate_rows: 
+    col_formats:
+    - 
+    - 
+    - 
+    tz: 
+    time_profile_id: 
+    display_filter: !ruby/object:MiqExpression
+      exp:
+        "=":
+          field: Vm.filesystems-name
+          value: "/etc/ssh/sshd_config"
+      context_type: 
+    col_options: {}
+    rpt_options:
+      :pdf:
+        :page_size: US-Letter
+      :queue_timeout: 
+      :pivot:
+        :group_cols:
+        - name
+    miq_group_id: 10000000000002
+    user_id: 10000000000001
+    menu_name: SSH Permit Root Login
+- MiqReport:
+    title: VM Compliance Report
+    rpt_group: Custom
+    rpt_type: Custom
+    priority: 
+    db: ManageIQ::Providers::InfraManager::Vm
+    cols:
+    - name
+    include:
+      last_compliance:
+        columns:
+        - compliant
+        - timestamp
+        - updated_on
+    col_order:
+    - name
+    - last_compliance.compliant
+    - last_compliance.timestamp
+    - last_compliance.updated_on
+    headers:
+    - Name
+    - Last Compliance History Compliant
+    - Last Compliance History Activity Sample - Timestamp (Day/Time)
+    - Last Compliance History Date Updated
+    conditions: !ruby/object:MiqExpression
+      exp:
+        "=":
+          field: ManageIQ::Providers::InfraManager::Vm-last_compliance_status
+          value: 'true'
+      context_type: 
+    order: Ascending
+    sortby: 
+    group: 
+    graph: 
+    dims: 
+    filename: 
+    file_mtime: 
+    categories: []
+    timeline:
+      :field: ManageIQ::Providers::InfraManager::Vm.last_compliance-timestamp
+      :position: Last
+    template_type: report
+    where_clause: 
+    db_options: {}
+    generate_cols: 
+    generate_rows: 
+    col_formats:
+    - 
+    - 
+    - 
+    - 
+    tz: 
+    time_profile_id: 
+    display_filter: 
+    col_options: {}
+    rpt_options:
+      :pdf:
+        :page_size: US-Letter
+      :queue_timeout: 
+    miq_group_id: 10000000000002
+    user_id: 10000000000001
+    menu_name: VM Compliance Report

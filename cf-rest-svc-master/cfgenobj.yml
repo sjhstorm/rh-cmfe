@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+
+  tasks:
+  - name: Create service catalog item request
+    uri:
+      url: "https://192.168.2.46/api/generic_objects"
+      method: POST
+      user: admin
+      password: "{{ password }}"
+      validate_certs: no
+      headers:
+        Content-Type:  application/json
+      body_format: json
+      body:
+        action: create
+        name: "{{ name }}"
+        generic_object_definition: 
+          href: "https://192.168.2.46/api/generic_object_definitions/1"
+        property_attributes:
+          haproxy_port: 80
+        associations:
+          vm: 
+           - href: "https://192.168.2.46/api/vms/18"
+           - href: "https://192.168.2.46/api/vms/17"

@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  tasks:
+
+  - name: Create service catalog item request
+    uri:
+      url: "https://192.168.2.46/api/services/46000000000013"
+      method: POST
+      user: admin
+      password: "{{ password }}"
+      validate_certs: no
+      headers:
+        Content-Type:  application/json
+      body_format: json
+      body:
+        action: add_resource
+        resource:
+          resource:
+            href: "https://192.168.2.46/api/generic_objects/46000000000018"

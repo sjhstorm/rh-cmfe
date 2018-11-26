@@ -1,0 +1,39 @@
+---
+- hosts: localhost
+  tasks:
+  - name: Get CF Catalog items
+    uri:
+      url: "https://{{ cf_address }}/api/services?expand=resources&attributes=name"
+      method: GET
+      return_content: yes
+      user: admin
+      password: "{{ cf_password }}"
+      validate_certs: no
+      body_format: json
+      headers:
+        Content-Type: "application/json"
+    register: cat_items
+  
+  - name:    
+    debug:
+      var: cat_items.json.resources
+
+- hosts: localhost
+  vars_prompt:
+    - name: "cat_item_number"
+      prompt: "Enter the last two digits of the service item number you wish to retire"
+      private: no
+    
+  tasks:
+  - name: "Retire item"
+    uri:
+      url: "https://{{ cf_address }}/api/services/200000000000{{ cat_item_number }}/"
+      method: POST
+      user: admin
+      password: "{{ cf_password }}"
+      validate_certs: no
+      headers:
+        Content-Type:  application/json
+      body_format: json
+      body:
+        action: retire

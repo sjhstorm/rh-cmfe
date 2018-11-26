@@ -1,0 +1,13 @@
+---
+object_type: domain
+version: 1.0
+object:
+  attributes:
+    name: DNS
+    description: 
+    display_name: 
+    priority: 4
+    enabled: false
+    tenant_id: 1
+    source: user
+    top_level_namespace: 
